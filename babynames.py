@@ -46,8 +46,29 @@ def extract_names(filename):
     ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
     """
     names = []
-    # +++your code here+++
+    with open(filename) as f:
+        names_dict = {}
+        contents = f.read()
+        year = re.search(r'Popularity\s*in\s*(\d\d\d\d)', contents)
+        names.append(year.group(1))
+        # print(names)
+        rank_and_names = re.findall(r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', contents)
+        # print(rank_and_names)
+        for name_data in rank_and_names:
+            for name in name_data[1:]:
+                if name not in names_dict:
+                    names_dict[name] = name_data[0]
+                    names.append('{} {}'.format(name, name_data[0]))
+        names = sorted(names)
+        # print(names)
+        # print(names_dict)
     return names
+
+
+def summarize(filename):
+    with open(filename + '.summary', 'w') as f:
+        text = '\n'.join(extract_names(filename)) + '\n'
+        f.write(text)
 
 
 def create_parser():
@@ -62,26 +83,32 @@ def create_parser():
 
 
 def main(args):
+    # extract_names('baby1994.html')
     # Create a command-line parser object with parsing rules
     parser = create_parser()
     # Run the parser to collect command-line arguments into a NAMESPACE called 'ns'
     ns = parser.parse_args(args)
+    file_list = ns.files
+    file_list = ''.join(file_list)
+    summary = ns.summaryfile
 
     if not ns:
         parser.print_usage()
         sys.exit(1)
+    elif summary:
+        summarize(file_list)
+    else:
+        print(extract_names(file_list))
 
-    file_list = ns.files
+    # # option flag
+    # create_summary = ns.summaryfile
 
-    # option flag
-    create_summary = ns.summaryfile
+    # # For each filename, call `extract_names` with that single file.
+    # # Format the resulting list a vertical list (separated by newline \n)
+    # # Use the create_summary flag to decide whether to print the list,
+    # # or to write the list to a summary file e.g. `baby1990.html.summary`
 
-    # For each filename, call `extract_names` with that single file.
-    # Format the resulting list a vertical list (separated by newline \n)
-    # Use the create_summary flag to decide whether to print the list,
-    # or to write the list to a summary file e.g. `baby1990.html.summary`
-
-    # +++your code here+++
+    # # +++your code here+++
 
 
 if __name__ == '__main__':
