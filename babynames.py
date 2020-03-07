@@ -77,38 +77,39 @@ def create_parser():
     parser.add_argument(
         '--summaryfile', help='creates a summary file', action='store_true')
     # The nargs option instructs the parser to expect 1 or more filenames.
-    # It will also expand wildcards just like the shell, e.g. 'baby*.html' will work.
+    # It will also expand wildcards just like 
+    # the shell, e.g. 'baby*.html' will work.
     parser.add_argument('files', help='filename(s) to parse', nargs='+')
     return parser
 
 
 def main(args):
-    # extract_names('baby1994.html')
     # Create a command-line parser object with parsing rules
     parser = create_parser()
     # Run the parser to collect command-line arguments into a NAMESPACE called 'ns'
     ns = parser.parse_args(args)
     file_list = ns.files
-    file_list = ''.join(file_list)
-    summary = ns.summaryfile
+    # file_list = ''.join(file_list)
+    create_summary = ns.summaryfile
 
     if not ns:
         parser.print_usage()
         sys.exit(1)
-    elif summary:
-        summarize(file_list)
+    elif create_summary:
+        for file_ in file_list:
+            summarize(file_)
     else:
-        print(extract_names(file_list))
+        for file_ in file_list:
+            print(extract_names(file_))
 
-    # # option flag
-    # create_summary = ns.summaryfile
+    # option flag
 
-    # # For each filename, call `extract_names` with that single file.
-    # # Format the resulting list a vertical list (separated by newline \n)
-    # # Use the create_summary flag to decide whether to print the list,
-    # # or to write the list to a summary file e.g. `baby1990.html.summary`
+    # For each filename, call `extract_names` with that single file.
+    # Format the resulting list a vertical list (separated by newline \n)
+    # Use the create_summary flag to decide whether to print the list,
+    # or to write the list to a summary file e.g. `baby1990.html.summary`
 
-    # # +++your code here+++
+    # +++your code here+++
 
 
 if __name__ == '__main__':
