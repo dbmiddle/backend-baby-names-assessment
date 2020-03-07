@@ -46,8 +46,29 @@ def extract_names(filename):
     ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
     """
     names = []
-    # +++your code here+++
+    with open(filename) as f:
+        names_dict = {}
+        contents = f.read()
+        year = re.search(r'Popularity\s*in\s*(\d\d\d\d)', contents)
+        names.append(year.group(1))
+        # print(names)
+        rank_and_names = re.findall(r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', contents)
+        # print(rank_and_names)
+        for name_data in rank_and_names:
+            for name in name_data[1:]:
+                if name not in names_dict:
+                    names_dict[name] = name_data[0]
+                    names.append('{} {}'.format(name, name_data[0]))
+        names = sorted(names)
+        # print(names)
+        # print(names_dict)
     return names
+
+
+def summarize(filename):
+    with open(filename + '.summary', 'w') as f:
+        text = '\n'.join(extract_names(filename)) + '\n'
+        f.write(text)
 
 
 def create_parser():
@@ -56,7 +77,8 @@ def create_parser():
     parser.add_argument(
         '--summaryfile', help='creates a summary file', action='store_true')
     # The nargs option instructs the parser to expect 1 or more filenames.
-    # It will also expand wildcards just like the shell, e.g. 'baby*.html' will work.
+    # It will also expand wildcards just like 
+    # the shell, e.g. 'baby*.html' will work.
     parser.add_argument('files', help='filename(s) to parse', nargs='+')
     return parser
 
@@ -66,15 +88,21 @@ def main(args):
     parser = create_parser()
     # Run the parser to collect command-line arguments into a NAMESPACE called 'ns'
     ns = parser.parse_args(args)
+    file_list = ns.files
+    # file_list = ''.join(file_list)
+    create_summary = ns.summaryfile
 
     if not ns:
         parser.print_usage()
         sys.exit(1)
-
-    file_list = ns.files
+    elif create_summary:
+        for file_ in file_list:
+            summarize(file_)
+    else:
+        for file_ in file_list:
+            print(extract_names(file_))
 
     # option flag
-    create_summary = ns.summaryfile
 
     # For each filename, call `extract_names` with that single file.
     # Format the resulting list a vertical list (separated by newline \n)
